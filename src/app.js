@@ -5,9 +5,10 @@ import util from 'util';
 
 import DiscordRichPresence from './DiscordRichPresence';
 
-const applicationID = process.env.DISCORD_APP_ID || null;
+const clientId = process.env.DISCORD_APP_ID || null;
 const updateInterval = process.env.DISCORD_STATUS_UPDATE_INTERVAL || 15 * 1000;
-const imageKeyLarge = process.env.DISCORD_APP_IMAGE || 'anime_nerv';
+const imageKeyLarge = process.env.DISCORD_APP_IMAGE_LARGE || 'anime_panzer_chibi';
+const imageKeySmall = process.env.DISCORD_APP_IMAGE_SMALL || 'anime_star_smile';
 const mpvTitlePattern = /^\[mpv\] (?:file: )?(.+)$/;
 const episodePattern = /(\s*-\s*)?(\d+)(\S*)$/;
 const rpc = new DiscordRPC.Client({ transport: 'ipc' });
@@ -57,7 +58,16 @@ const checkUpdateStatus = async () => {
     const presenceDetails = {
       details: episodeTitle,
       state: episodeNumber,
-      largeImageKey: imageKeyLarge,
+      images: {
+        large: {
+          key: imageKeyLarge,
+          text: 'Watching media',
+        },
+        small: {
+          key: imageKeySmall,
+          text: 'anime',
+        },
+      },
     };
 
     const newPresence = new DiscordRichPresence(presenceDetails);
@@ -88,12 +98,12 @@ process.on('SIGINT', () => {
   process.exit();
 });
 
-if (!applicationID) {
+if (!clientId) {
   console.log('you must supply application ID in the DISCORD_APP_ID environment variable');
 } else {
   console.log('starting up / logging in');
   rpc
-    .login(applicationID)
+    .login({ clientId })
     .catch(console.error)
   ;
 }

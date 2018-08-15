@@ -54,7 +54,7 @@ class DiscordRichPresence {
   }
 
   update(newState) {
-    this.state = _.assign(
+    this.state = _.merge(
       this.state,
       {
         timestamps: {
